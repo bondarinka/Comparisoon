@@ -40,7 +40,7 @@ function App() {
         <Route exact path="/categories/new">
           <CreateCategory />
         </Route>
-        <Route exact path="/compare">
+        <Route exact path="/compare/:categoryId">
           <Compare />
         </Route>
         <Route exact path="/technologies/new">

@@ -43,7 +43,7 @@ function Categories() {
               <li className="category" key={category.id}>
                 <Link
                   to={{
-                    pathname: `/categories/${category.id}`,
+                    pathname: `/compare/${category.id}`,
                     state: { category },
                   }}
                 >
