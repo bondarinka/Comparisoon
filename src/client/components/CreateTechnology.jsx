@@ -15,13 +15,35 @@ export default function NewTechnology(props) {
   const inputItemRef = useRef(null);
   const [categories, setCategories] = useState([]); //fetched data (together with fields, id, name), all categories
   const [category, setCategory] = useState({}); //Individual Category (id)
-  const [values, setValues] = useState([]);
+  const [values, setValues] = useState({});
 
   //item name - input form
   //Categories - Dropdown
   //Fields - text area/ input
 
-  // useEffect(() => {
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((response) => {
+        console.log("response ", response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log("data", data);
+        setCategories(data);
+        console.log("FIRST ", data[0]);
+        const catObj = data[0];
+        setCategory(catObj);
+        // const fArr = [];
+        // create object with keys fields from the category object
+        const fObj = {};
+        catObj.fields.map((f) => (fObj[f] = ""));
+        setValues(fObj);
+        // setValues(catObj.fields.map((f) => ""));
+        console.log("CHOSEN CAT init ", category);
+      });
+  }, []);
+
+  // useLayoutEffect(() => {
   //   fetch("/api/categories")
   //     .then((response) => {
   //       console.log("response ", response);
@@ -37,35 +59,26 @@ export default function NewTechnology(props) {
   //     });
   // }, []);
 
-  useLayoutEffect(() => {
-    fetch("/api/categories")
-      .then((response) => {
-        console.log("response ", response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log("data", data);
-        setCategories(data);
-        console.log("FIRST ", data[0]);
-        const catObj = data[0];
-        setCategory(catObj);
-        console.log("CHOSEN CAT init ", category);
-      });
-  }, []);
-
   const handleChosenCategory = (e) => {
     // console.log("e.target: " , e.target.value);
     // console.log("categories: ", categories);
-    const catObj = categories.filter((c) => c.name == e.target.value)[0];
+    const catObj = categories.filter((c) => c.name === e.target.value)[0];
     setCategory(catObj);
+    const fObj = {};
+    catObj.fields.map((f) => (fObj[f] = ""));
+    setValues(fObj);
+    // setValues(catObj.fields.map((f) => ""));
     console.log("CHOSEN CATEGORY ", catObj);
   };
 
   const handleField = (e) => {
     e.preventDefault();
-    const valuesArr = [...values];
-    valuesArr[e.target.id] = e.target.value;
-    setValues(valuesArr);
+    const valuesObj = {...values};
+    console.log("VALUES ", values);
+    console.log("TARGET ", e.target.value);
+    // console.log("ID ", e.target.id);
+    valuesObj[e.target.name] = e.target.value;
+    setValues(valuesObj);
   };
 
   const Dropdown = (props) => {
@@ -84,16 +97,19 @@ export default function NewTechnology(props) {
     );
   };
 
+  // <label value = {props.name}>
+  // value={props.val}
+  // value={values[props.ind]}
   //Create field components
   const Field = (props) => {
     return (
       <div>
-        <label>{props.name}</label>
+        <label htmlFor={props.field}>{props.field}</label>
         <input
-          id={props.name}
           type="text"
+          name={props.field}
+          value={values[props.field]}
           onChange={props.handleChange}
-          value={props.val}
         />
       </div>
     );
@@ -103,12 +119,19 @@ export default function NewTechnology(props) {
     e.preventDefault();
     if (inputItemRef.current.value && category && values) {
       // modify the structure!
+      // let cat = category.id;
       // const data = {
       //   name: inputItemRef.current.value,
       //   fields: {
-      //     `${category.name}`: {category.fields}: {values},
+      //     category.id: values,
       //   }
       // };
+      const data = {
+        name: inputItemRef.current.value,
+        fields: {},
+      };
+      data.fields[category.id] = values;
+      console.log('DATA TO SAVE ', data);
       fetch("/api/items", {
         method: "POST",
         headers: {
@@ -133,7 +156,7 @@ export default function NewTechnology(props) {
   return (
     <div>
       <div>
-        <form onClick={handleSaveTechnology}>
+        <form onSubmit={handleSaveTechnology}>
           <div>
             <input type="text" placeholder="Name-Of-Tech" ref={inputItemRef} />
           </div>
@@ -141,7 +164,18 @@ export default function NewTechnology(props) {
             <Dropdown handleChange={handleChosenCategory} choice={category} />
           </div>
           <div className="fieldsContainer">
-            {JSON.stringify(category.fields)}
+            {category.fields
+              ? category.fields.map((f, i) => {
+                  return (
+                    <Field
+                      key={f + i}
+                      field={f}
+                      ind={i}
+                      handleChange={handleField}
+                    />
+                  );
+                })
+              : null}
           </div>
           <button type="submit"> Save </button>
         </form>
@@ -150,6 +184,8 @@ export default function NewTechnology(props) {
     </div>
   );
 }
+
+// val={f}
 
 // {JSON.stringify(category.fields)}
 
