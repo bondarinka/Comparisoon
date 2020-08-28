@@ -1,8 +1,8 @@
 const db = require("../db/db.js");
 const compareController = {};
 
-/* 
-received categoryId as param 
+/*
+received categoryId as param
 Response body structure:
 {
   <itemName>: {
@@ -21,7 +21,7 @@ Response body structure:
 
     // Note: apparently it is better to use INNER JOIN vs. selecting from multiple tables (implicit join) like this:
     SELECT items.name FROM items, item_category WHERE item_category.categoryid=31 AND items.id=item_category.itemid
-    
+
     SQL Query 2
     Use all_inputs to get the field: value pairs for the userid, categoryid, and the specific itemid
 

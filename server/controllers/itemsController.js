@@ -43,13 +43,13 @@ itemsController.insertItems = (req, res, next) => {
     // update the all_inputs table with a row for each field in the item
     .then((response) => {
       console.log("Updated item_category relations table");
-      /* 
+      /*
         req.body structure:
         {
-          name: <itemName>,  
-          fields: { 
-            <category1Id>: {’data flow’ :  value, ‘field2’: value }, 
-            <category2Id>: { more key-value pairs }	
+          name: <itemName>,
+          fields: {
+            <category1Id>: {’data flow’ :  value, ‘field2’: value },
+            <category2Id>: { more key-value pairs }
             }
           }
         trying to get data like this:
@@ -87,7 +87,6 @@ itemsController.insertItems = (req, res, next) => {
 
 itemsController.getItemById = (req, res, next) => {
   // const getitemQuery = ``
-
 };
 
 module.exports = itemsController;
